@@ -2,6 +2,8 @@ from langchain.prompts import PromptTemplate
 
 SQL_QUERY_PROMPT_TEXT="""-- Language : SQL
 -- Dialect : SQLITE
+-- Here are the descriptions of the table schemas; please read them carefully to better understand the table:
+{descriptions}
 -- Here are the table schemas :
 {schemas}
 -- A SQL query to return 1:
