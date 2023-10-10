@@ -13,6 +13,7 @@ class SQLChain(Chain):
     db: SQLDatabase
     llm_chain_query: LLMChain
     llm_chain_response: LLMChain
+    table_descriptions: str
 
     input_key: str = "question" #: :meta private:
     output_key: str = "output"  #: :meta private:
@@ -37,7 +38,7 @@ class SQLChain(Chain):
         table_infos_str = self.db.get_table_info_no_throw(table_names_list)
 
         # generate the sql query
-        sql_query = self.llm_chain_query.run({**inputs, "schemas": table_infos_str})
+        sql_query = self.llm_chain_query.run({**inputs, "schemas": table_infos_str, "descriptions": self.table_descriptions})
         print("sql_query", sql_query)
 
         # execute the sql query
@@ -56,6 +57,7 @@ class SQLChain(Chain):
         llm,
         prompt_sql_query = SQL_QUERY_PROMPT,
         prompt_response = RESPONSE_PROMPT,
+        table_descriptions="",
         verbose = False,
         **kwargs
     ):
@@ -64,6 +66,7 @@ class SQLChain(Chain):
             llm=llm, 
             llm_chain_query=LLMChain(llm=llm, prompt=prompt_sql_query, verbose=verbose), 
             llm_chain_response=LLMChain(llm=llm, prompt=prompt_response, verbose=verbose),
+            table_descriptions=table_descriptions,
             **kwargs
         )
 

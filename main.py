@@ -106,7 +106,8 @@ def fake_data_base():
 def create_chain(conn, verbose=True):
 	db = SQLDatabase(engine=create_engine('sqlite://', creator = lambda: conn))
 	llm = ChatOpenAI(temperature=0, model="gpt-4")
-	return SQLChain.from_db_and_llm(llm=llm, db=db, verbose=verbose)
+	descriptions_str = Path(__file__).parent.joinpath("description.csv").read_text()  # description of each columns
+	return SQLChain.from_db_and_llm(llm=llm, db=db, verbose=verbose, table_descriptions=descriptions_str)
 
 def main():
 	con = None

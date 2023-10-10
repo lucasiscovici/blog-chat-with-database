@@ -1,0 +1,7 @@
+table;column;column_type;description
+data;date;DATE; YYYY-MM-DD date format
+data;company;CHAR; The name of the company, always capitalized
+data;sector;CHAR; The sector of the company, "ENERGY" or "TELECOMMUNICATION" OR "CONFECTIONERY", always uppercased
+data;sales;INTEGER; the sales in dollars
+data;ebitda;INTEGER; the ebitda in dollars
+data;type;CHAR; the type is "actual" (the real value) or "budget" (the budgeted value), always lowercased
