@@ -85,7 +85,7 @@ def create_fake_data_prepared(filename="data.csv"):
 
 
 def fake_data_base():
-	data_prepared = False
+	data_prepared = True
 	filename = "data.csv" if data_prepared else "data_not_prepared.csv"
 	data_path = Path(__file__).parent.joinpath(filename)
 	if not data_path.exists():
