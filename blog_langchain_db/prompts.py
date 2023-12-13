@@ -32,7 +32,8 @@ SQL_QUERY_PROMPT_TEXT="""-- Language : SQL
 {history}
 -- A SQL query to return 1:
 SELECT 1;
--- A SQL query for "{question}". Please only make a stand-alone query. DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database. DO NOT RETURN Markdown Format SQL CODE. DO NOT ADD '```'.:
+-- A SQL query for "{question}". Please only make a stand-alone query. DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database. DO NOT RETURN Markdown Format SQL CODE. DO NOT ADD '```'.
+Always include a WHERE condition to exclude NULL values. IMPORTANT: Whenever you use a SQL 'SUM' operation, always accompany it with a 'COUNT' operation for the NOT NULL values being summed:
 """
 
 SQL_QUERY_PROMPT = PromptTemplate.from_template(SQL_QUERY_PROMPT_TEXT)
