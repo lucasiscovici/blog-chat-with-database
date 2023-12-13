@@ -4,6 +4,8 @@ from langchain.prompts import PromptTemplate
 FACTS_PROMPT_STR = """
 -- Here is the question of the user :
 {question}
+-- Here is the conversation with the user (the last is the most recent); Use it to better understand the question of the user :
+{history}
 -- Here are the descriptions of the table schemas; please read them carefully to better understand the table:
 {descriptions}
 -- Here are the table schemas :
@@ -26,6 +28,8 @@ SQL_QUERY_PROMPT_TEXT="""-- Language : SQL
 {schemas}
 -- Here are the interesting facts:
 {facts}
+-- Here is the conversation with the user (the last is the most recent). Don't use it to generate the SQL query, it's only used to understand the context.
+{history}
 -- A SQL query to return 1:
 SELECT 1;
 -- A SQL query for "{question}". Please only make a stand-alone query. DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database. DO NOT RETURN Markdown Format SQL CODE. DO NOT ADD '```'.:
@@ -35,6 +39,10 @@ SQL_QUERY_PROMPT = PromptTemplate.from_template(SQL_QUERY_PROMPT_TEXT)
 
 RESPONSE_PROMPT_TEXT="""As a SQL specialist, I'll format the answer to your question and query response, ensuring a conversational, polite, formal, and factual presentation, while adhering to standard financial notation for numerical values.
 
+The history of the conversation (the last is the most recent):
+---------
+{history}
+---------
 The user's question : {question}.
 The facts: {facts}.
 The SQL query: {query}.
