@@ -13,6 +13,7 @@ from sqlalchemy import  create_engine
 
 from blog_langchain_db.chain import SQLChain 
 from langchain.chat_models import ChatOpenAI
+from langchain.memory import ConversationBufferMemory
 
 def create_fake_data_not_prepared(filename="data_not_prepared.csv"):
 	# Create a sample DataFrame
@@ -107,7 +108,8 @@ def create_chain(conn, verbose=True):
 	db = SQLDatabase(engine=create_engine('sqlite://', creator = lambda: conn))
 	llm = ChatOpenAI(temperature=0, model="gpt-4")
 	descriptions_str = Path(__file__).parent.joinpath("description.csv").read_text()  # description of each columns
-	return SQLChain.from_db_and_llm(llm=llm, db=db, verbose=verbose, table_descriptions=descriptions_str)
+	memory = ConversationBufferMemory()
+	return SQLChain.from_db_and_llm(llm=llm, db=db, verbose=verbose, table_descriptions=descriptions_str, memory=memory)
 
 def main():
 	con = None
@@ -115,6 +117,7 @@ def main():
 		conn = fake_data_base()
 		chain = create_chain(conn, verbose=True)
 		print(chain("What were the revenue of SFR in 2022 ?")["output"])
+		print(chain("in 2021 ?")["output"])
 	finally:
 		conn.close()
 
