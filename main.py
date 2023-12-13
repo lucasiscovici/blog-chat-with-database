@@ -118,6 +118,7 @@ def main():
 		chain = create_chain(conn, verbose=True)
 		print(chain("What were the revenue of SFR in 2022 ?")["output"])
 		print(chain("in 2021 ?")["output"])
+		print(chain("for that year, which months are available ?")["output"])
 	finally:
 		conn.close()
 

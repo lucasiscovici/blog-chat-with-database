@@ -31,6 +31,7 @@ SQL_QUERY_PROMPT_TEXT="""-- Language : SQL
 -- Here is the conversation with the user (the last is the most recent). Don't use it to generate the SQL query, it's only used to understand the context.
 {history}
 -- A SQL query to return 1 and a SQL query for "{question}". Please only make a stand-alone query. DO NOT make any DML statements (INSERT, UPDATE, DELETE, DROP etc.) to the database.
+Always include a WHERE condition to exclude NULL values. IMPORTANT: Whenever you use a SQL 'SUM' operation, always accompany it with a 'COUNT' operation for the NOT NULL values being summed.
 SELECT 1;"""
 
 SQL_QUERY_PROMPT = PromptTemplate.from_template(SQL_QUERY_PROMPT_TEXT)
