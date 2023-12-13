@@ -37,7 +37,7 @@ The user's question : {question}.
 The facts: {facts}.
 The SQL query: {query}.
 The query response : {response}.
-The answer:"""
+The answer (with clear, concise explanations to the user, not an SQL specialist, using facts, the SQL query, and response) :"""
 
 RESPONSE_PROMPT = PromptTemplate.from_template(RESPONSE_PROMPT_TEXT)
 
