@@ -20,6 +20,26 @@ Present your answer as a bulleted list:
 FACTS_PROMPT = PromptTemplate.from_template(FACTS_PROMPT_STR)
 
 
+EARLY_STOP_QUESTION_PROMPT_TEXT = """
+-- Here is the question of the user :
+{question}
+-- Here is the conversation with the user (the last is the most recent); Use it to better understand the question of the user :
+{history}
+-- Here are the descriptions of the table schemas; please read them carefully to better understand the table:
+{descriptions}
+-- Here are the table schemas :
+{schemas}
+-- Here are the interesting facts:
+{facts}
+-- Based on the user's question, table schemas, schemas descriptions, and conversation history, consider posing a clarifying question if necessary. 
+In the tables, some columns serve as filters ("Key Columns" or "Index Columns") while others store specific data ("Data Columns" or "Value Columns").
+If you're unable to determine the correct value for any "Key" or "Index" column from the table descriptions and schemas, and it's crucial for addressing the user's query, seek further clarity.
+However, use discretion. If you genuinely cannot discern a value and deem it vital, prompt the user with a question.
+-- If you can formulate a PostgreSQL query to aptly address the user's question, return 'OK'.
+-- Your response should either be 'OK' or a clarifying question.
+"""
+EARLY_STOP_QUESTION_PROMPT = PromptTemplate.from_template(EARLY_STOP_QUESTION_PROMPT_TEXT)
+
 SQL_QUERY_PROMPT_TEXT="""-- Language : SQL
 -- Dialect : SQLITE
 -- Here are the descriptions of the table schemas; please read them carefully to better understand the table:

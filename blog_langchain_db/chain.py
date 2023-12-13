@@ -3,7 +3,7 @@ from langchain.chains.base import Chain
 from langchain.utilities import SQLDatabase
 from langchain.chains import LLMChain
 
-from .prompts import SQL_QUERY_PROMPT, RESPONSE_PROMPT, FACTS_PROMPT, SQL_FIXER_PROMPT
+from .prompts import SQL_QUERY_PROMPT, RESPONSE_PROMPT, FACTS_PROMPT, SQL_FIXER_PROMPT, EARLY_STOP_QUESTION_PROMPT
 
 class SQLChain(Chain):
 
@@ -12,6 +12,7 @@ class SQLChain(Chain):
     llm_chain_response: LLMChain
     llm_chain_facts: LLMChain
     llm_chain_sql_fixer: LLMChain
+    llm_early_stop_question: LLMChain
     table_descriptions: str
 
     input_key: str = "question" #: :meta private:
@@ -40,6 +41,18 @@ class SQLChain(Chain):
                 "descriptions": self.table_descriptions,
             }
         )
+
+        ask_question_text = self.llm_early_stop_question.run(
+            {
+                **inputs,
+                "schemas": table_infos_str,
+                "descriptions": self.table_descriptions,
+                "facts": facts,
+            }
+        )
+
+        if ask_question_text != "OK":
+            return {self.output_key: ask_question_text}
 
         # generate the sql query
         sql_query = self.llm_chain_query.run(
@@ -89,6 +102,7 @@ class SQLChain(Chain):
         prompt_response = RESPONSE_PROMPT,
         prompt_facts = FACTS_PROMPT,
         prompt_sql_fixer = SQL_FIXER_PROMPT,
+        prompt_early_stop_question = EARLY_STOP_QUESTION_PROMPT,
         table_descriptions="",
         verbose = False,
         **kwargs
@@ -100,6 +114,7 @@ class SQLChain(Chain):
             llm_chain_response=LLMChain(llm=llm, prompt=prompt_response, verbose=verbose),
             llm_chain_facts=LLMChain(llm=llm, prompt=prompt_facts, verbose=verbose),
             llm_chain_sql_fixer=LLMChain(llm=llm, prompt=prompt_sql_fixer, verbose=verbose),
+            llm_early_stop_question=LLMChain(llm=llm, prompt=prompt_early_stop_question, verbose=verbose),
             table_descriptions=table_descriptions,
             **kwargs
         )
