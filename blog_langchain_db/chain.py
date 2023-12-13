@@ -3,7 +3,7 @@ from langchain.chains.base import Chain
 from langchain.utilities import SQLDatabase
 from langchain.chains import LLMChain
 
-from .prompts import SQL_QUERY_PROMPT, RESPONSE_PROMPT, FACTS_PROMPT
+from .prompts import SQL_QUERY_PROMPT, RESPONSE_PROMPT, FACTS_PROMPT, SQL_FIXER_PROMPT
 
 class SQLChain(Chain):
 
@@ -11,6 +11,7 @@ class SQLChain(Chain):
     llm_chain_query: LLMChain
     llm_chain_response: LLMChain
     llm_chain_facts: LLMChain
+    llm_chain_sql_fixer: LLMChain
     table_descriptions: str
 
     input_key: str = "question" #: :meta private:
@@ -51,8 +52,25 @@ class SQLChain(Chain):
         )
         print("sql_query", sql_query)
 
+        # force bug
+        # sql_query = "```sql "+sql_query+"```"
+
         # execute the sql query
         query_response = self.db.run_no_throw(sql_query)
+
+        # check the sql query
+        if query_response.startswith("Error: "):
+            sql_query_fixed = self.llm_chain_sql_fixer.run(
+                {
+                    "schemas": table_infos_str,
+                    "descriptions": self.table_descriptions,
+                    "errors": query_response,
+                    "query": sql_query
+                }
+            )
+            # execute the fixed sql query
+            query_response = self.db.run_no_throw(sql_query_fixed)
+            sql_query = sql_query_fixed
 
         # generate the response
         response = self.llm_chain_response.run(
@@ -70,6 +88,7 @@ class SQLChain(Chain):
         prompt_sql_query = SQL_QUERY_PROMPT,
         prompt_response = RESPONSE_PROMPT,
         prompt_facts = FACTS_PROMPT,
+        prompt_sql_fixer = SQL_FIXER_PROMPT,
         table_descriptions="",
         verbose = False,
         **kwargs
@@ -80,6 +99,7 @@ class SQLChain(Chain):
             llm_chain_query=LLMChain(llm=llm, prompt=prompt_sql_query, verbose=verbose), 
             llm_chain_response=LLMChain(llm=llm, prompt=prompt_response, verbose=verbose),
             llm_chain_facts=LLMChain(llm=llm, prompt=prompt_facts, verbose=verbose),
+            llm_chain_sql_fixer=LLMChain(llm=llm, prompt=prompt_sql_fixer, verbose=verbose),
             table_descriptions=table_descriptions,
             **kwargs
         )

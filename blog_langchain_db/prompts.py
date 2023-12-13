@@ -50,3 +50,30 @@ The answer (with clear, concise explanations to the user, not an SQL specialist,
 
 RESPONSE_PROMPT = PromptTemplate.from_template(RESPONSE_PROMPT_TEXT)
 
+SQL_FIXER_PROMPT_TEXT="""
+You have to rewrite the sql query which causes the errors listed bellow. You must use the table descriptions and schemas to rewrite the sql query.
+
+-- Here are the descriptions of the table schemas; please read them carefully to better understand the table:
+{descriptions}
+-- Here are the table schemas :
+{schemas}
+-- Here is the query to check:
+{query}
+-- Here are the query errors:
+{errors}
+
+Double check the SQLITE query above for common mistakes, including:
+- Using NOT IN with NULL values
+- Using UNION when UNION ALL should have been used
+- Using BETWEEN for exclusive ranges
+- Data type mismatch in predicates
+- Properly quoting identifiers
+- Using the correct number of arguments for functions
+- Casting to the correct data type
+- Using the proper columns for joins
+
+Output the final SQL query only.
+
+SQL Query: """
+
+SQL_FIXER_PROMPT = PromptTemplate.from_template(SQL_FIXER_PROMPT_TEXT)
